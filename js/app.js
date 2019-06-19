@@ -150,6 +150,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
   btnAdd.style.display = 'block';
 });
 
+window.addEventListener('appinstalled', (evt) => {
+	console.log("Instalada");
+    app.logEvent('a2hs', 'installed');
+      btnAdd.style.display = 'none';
+});
+
 
 btnAdd.addEventListener('click', (e) => {
   // hide our user interface that shows our A2HS button
