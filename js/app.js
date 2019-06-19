@@ -179,10 +179,10 @@ btnAdd.addEventListener('click', (e) => {
 
 setTimeout(function() {
 
-	if(  deferredPrompt.prompt()){
-  		btnAdd.style.display = 'none';
+	if(  deferredPrompt){
 		console.log("test1");
 	}else{
+  		btnAdd.style.display = 'none';
 		console.log("test2");
 	}
 }, 1000);
