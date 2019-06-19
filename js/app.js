@@ -177,7 +177,15 @@ btnAdd.addEventListener('click', (e) => {
 
 
 
+setTimeout(function() {
 
+	if(  deferredPrompt.prompt()){
+  		btnAdd.style.display = 'none';
+		console.log("test1");
+	}else{
+		console.log("test2");
+	}
+}, 1000);
 
 
 
