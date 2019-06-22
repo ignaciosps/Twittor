@@ -254,3 +254,6 @@ setTimeout(function() {
 setTimeout(function() {
     notificarme();
 }, 10000);
+
+const btnNotif = document.getElementById('notificar');
+btnNotif.addEventListener('click',notificarme);
