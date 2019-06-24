@@ -8,7 +8,7 @@ if ( navigator.serviceWorker ) {
 
 
     if ( url.includes('localhost') ) {
-        swLocation = '/sw.js';
+        swLocation = './sw.js';
     }
 
 
@@ -179,7 +179,7 @@ postBtn.on('click', function() {
 });
 
 
-
+/*
 // Obtener mensajes del servidor
 function getMensajes() {
 
@@ -198,7 +198,7 @@ function getMensajes() {
 }
 
 getMensajes();
-
+*/
 
 /*
 // Detectar cambios de conexión
@@ -306,7 +306,7 @@ function getPublicKey() {
     //     .then( res => res.text())
     //     .then( console.log );
 
-    return fetch('api/key')
+    return fetch('https://ignaciosps-twittor.herokuapp.com/api/key')
         .then( res => res.arrayBuffer())
         // returnar arreglo, pero como un Uint8array
         .then( key => new Uint8Array(key) );
@@ -329,7 +329,7 @@ btnDesactivadas.on( 'click', function() {
         .then( suscripcion => {
 
             // console.log(suscripcion);
-            fetch('api/subscribe', {
+            fetch('https://ignaciosps-twittor.herokuapp.com/api/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify( suscripcion )

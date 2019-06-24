@@ -1,80 +1,129 @@
-//Imports
 importScripts('./js/sw-utils.js');
 
-const CACHE_STATIC_NAME = 'static-v2';
-const CACHE_DYNAMIC_NAME = 'dynamic-v1';
-const CACHE_INMUTABLE_NAME = 'inmutable-v1';
-//Los avatars podrían ser dinamicos e ir en el otro caché, teniendo en este una imagen por defecto  
+
+const STATIC_CACHE    = 'static-v3';
+const DYNAMIC_CACHE   = 'dynamic-v3';
+const INMUTABLE_CACHE = 'inmutable-v3';
+
+
 const APP_SHELL = [
-    './',
-    './index.html',
-    './css/style.css',
-    './img/favicon.ico',
-    './img/avatars/hulk.jpg',
-    './img/avatars/ironman.jpg',
-    './img/avatars/spiderman.jpg',
-    './img/avatars/thor.jpg',
-    './img/avatars/wolverine.jpg',
-    './js/app.js',
-    './js/sw-utils.js'
+    '/',
+    'index.html',
+    'css/style.css',
+    'img/favicon.ico',
+    'img/avatars/hulk.jpg',
+    'img/avatars/ironman.jpg',
+    'img/avatars/spiderman.jpg',
+    'img/avatars/thor.jpg',
+    'img/avatars/wolverine.jpg',
+    'js/app.js',
+    'js/sw-utils.js'
 ];
+
 const APP_SHELL_INMUTABLE = [
     'https://fonts.googleapis.com/css?family=Quicksand:300,400',
     'https://fonts.googleapis.com/css?family=Lato:400,300',
     'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
-    './css/animate.css',
-    './js/libs/jquery.js'
+    'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
+    'https://cdn.jsdelivr.net/npm/pouchdb@7.0.0/dist/pouchdb.min.js'
 ];
+
+
 
 self.addEventListener('install', e => {
 
-    const cacheStatic = caches.open(CACHE_STATIC_NAME)
-        .then(cache => cache.addAll(APP_SHELL));
 
-    const cacheInmutable = caches.open(CACHE_INMUTABLE_NAME)
-        .then(cache => cache.addAll(APP_SHELL_INMUTABLE));
+    const cacheStatic = caches.open( STATIC_CACHE ).then(cache => 
+        cache.addAll( APP_SHELL ));
 
-    const respuesta = Promise.all([cacheStatic, cacheInmutable]).catch(err => {
-        console.log(err);
-    });
+    const cacheInmutable = caches.open( INMUTABLE_CACHE ).then(cache => 
+        cache.addAll( APP_SHELL_INMUTABLE ));
 
-    e.waitUntil(respuesta);
+
+
+    e.waitUntil( Promise.all([ cacheStatic, cacheInmutable ])  );
+
 });
+
 
 self.addEventListener('activate', e => {
 
-    const respuesta = caches.keys()
-        .then(keys => {
-            keys.forEach(key => {
-                if (key !== CACHE_STATIC_NAME && key.includes('static')) {
-                    return caches.delete(key);
-                }
-            })
-        })
+    const respuesta = caches.keys().then( keys => {
 
-    e.waitUntil(respuesta);
+        keys.forEach( key => {
+
+            if (  key !== STATIC_CACHE && key.includes('static') ) {
+                return caches.delete(key);
+            }
+
+            if (  key !== DYNAMIC_CACHE && key.includes('dynamic') ) {
+                return caches.delete(key);
+            }
+
+        });
+
+    });
+
+    e.waitUntil( respuesta );
+
 });
+
+
+
+
 
 self.addEventListener( 'fetch', e => {
+
     let respuesta;
+
     if ( e.request.url.includes('/api') ) {
+
         // return respuesta????
         respuesta = manejoApiMensajes( DYNAMIC_CACHE, e.request );
+
     } else {
+
         respuesta = caches.match( e.request ).then( res => {
+
             if ( res ) {
+                
                 actualizaCacheStatico( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
                 return res;
+                
             } else {
+    
                 return fetch( e.request ).then( newRes => {
+    
                     return actualizaCacheDinamico( DYNAMIC_CACHE, e.request, newRes );
+    
                 });
+    
             }
+    
         });
+
     }
+
     e.respondWith( respuesta );
+
 });
 
+
+// tareas asíncronas
+self.addEventListener('sync', e => {
+
+    console.log('SW: Sync');
+
+    if ( e.tag === 'nuevo-post' ) {
+
+        // postear a BD cuando hay conexión
+        const respuesta = postearMensajes();
+        
+        e.waitUntil( respuesta );
+    }
+
+});
 
 // Escuchar PUSH
 self.addEventListener('push', e => {
@@ -96,7 +145,7 @@ self.addEventListener('push', e => {
         vibrate: [125,75,125,275,200,275,125,75,125,275,200,600,200,600],
         openUrl: 'https://mapanet.com.ar/virgendelhuerto/inicio.html',
         data: {
-            url: 'https://mapanet.com.ar/virgendelhuerto/inicio.html',
+            url: 'https://mapanet.com.ar/virgendelhuerto/inicio.html'
         }
     };
 
