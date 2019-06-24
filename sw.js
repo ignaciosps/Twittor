@@ -55,18 +55,24 @@ self.addEventListener('activate', e => {
     e.waitUntil(respuesta);
 });
 
-self.addEventListener('fetch', e => {
-
-    const respuesta = caches.match(e.request)
-        .then(res => {
-            if (res) return res;
-            return fetch(e.request)
-                .then(newRes => {
-                    return actualizaCacheDinamico(CACHE_DYNAMIC_NAME, e.request, newRes);
-                })
-        })
-
-    e.respondWith(respuesta);
+self.addEventListener( 'fetch', e => {
+    let respuesta;
+    if ( e.request.url.includes('/api') ) {
+        // return respuesta????
+        respuesta = manejoApiMensajes( DYNAMIC_CACHE, e.request );
+    } else {
+        respuesta = caches.match( e.request ).then( res => {
+            if ( res ) {
+                actualizaCacheStatico( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
+                return res;
+            } else {
+                return fetch( e.request ).then( newRes => {
+                    return actualizaCacheDinamico( DYNAMIC_CACHE, e.request, newRes );
+                });
+            }
+        });
+    }
+    e.respondWith( respuesta );
 });
 
 
@@ -80,32 +86,18 @@ self.addEventListener('push', e => {
     // console.log(data);
 
 
-    const title = data.titulo;
+    const title = 'Novena a la Virgen del Huerto';
     const options = {
-        body: data.cuerpo,
+        body: data.mensaje,
         // icon: 'img/icons/icon-72x72.png',
-        icon: `img/avatars/${ data.usuario }.jpg`,
+        icon: `https://mapanet.com.ar/virgendelhuerto/img/icons/icon-72x72.png`,
         badge: 'img/favicon.ico',
-        image: 'https://vignette.wikia.nocookie.net/marvelcinematicuniverse/images/5/5b/Torre_de_los_Avengers.png/revision/latest?cb=20150626220613&path-prefix=es',
+        //image: 'https://vignette.wikia.nocookie.net/marvelcinematicuniverse/images/5/5b/Torre_de_los_Avengers.png/revision/latest?cb=20150626220613&path-prefix=es',
         vibrate: [125,75,125,275,200,275,125,75,125,275,200,600,200,600],
-        openUrl: '/',
+        openUrl: 'https://mapanet.com.ar/virgendelhuerto/inicio.html',
         data: {
-            // url: 'https://google.com',
-            url: '/',
-            id: data.usuario
-        },
-        actions: [
-            {
-                action: 'thor-action',
-                title: 'Thor',
-                icon: 'img/avatar/thor.jpg'
-            },
-            {
-                action: 'ironman-action',
-                title: 'Ironman',
-                icon: 'img/avatar/ironman.jpg'
-            }
-        ]
+            url: 'https://mapanet.com.ar/virgendelhuerto/inicio.html',
+        }
     };
 
 
@@ -114,3 +106,44 @@ self.addEventListener('push', e => {
 
 });
 
+
+// Cierra la notificacion
+self.addEventListener('notificationclose', e => {
+    console.log('Notificación cerrada', e);
+});
+
+
+self.addEventListener('notificationclick', e => {
+
+
+    const notificacion = e.notification;
+    const accion = e.action;
+
+
+    console.log({ notificacion, accion });
+    // console.log(notificacion);
+    // console.log(accion);
+    
+
+    const respuesta = clients.matchAll()
+    .then( clientes => {
+
+        let cliente = clientes.find( c => {
+            return c.visibilityState === 'visible';
+        });
+
+        if ( cliente !== undefined ) {
+            cliente.navigate( notificacion.data.url );
+            cliente.focus();
+        } else {
+            clients.openWindow( notificacion.data.url );
+        }
+
+        return notificacion.close();
+
+    });
+
+    e.waitUntil( respuesta );
+
+
+});
