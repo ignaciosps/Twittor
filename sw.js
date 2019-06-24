@@ -1,4 +1,4 @@
-importScripts('./js/sw-utils.js');
+importScripts('https://ignaciosps.github.io/Twittor/js/sw-utils.js');
 
 
 const STATIC_CACHE    = 'static-v3';
@@ -7,17 +7,17 @@ const INMUTABLE_CACHE = 'inmutable-v3';
 
 
 const APP_SHELL = [
-    '/',
-    'index.html',
-    'css/style.css',
-    'img/favicon.ico',
-    'img/avatars/hulk.jpg',
-    'img/avatars/ironman.jpg',
-    'img/avatars/spiderman.jpg',
-    'img/avatars/thor.jpg',
-    'img/avatars/wolverine.jpg',
-    'js/app.js',
-    'js/sw-utils.js'
+    'https://ignaciosps.github.io/Twittor/',
+    'https://ignaciosps.github.io/Twittor/index.html',
+    'https://ignaciosps.github.io/Twittor/css/style.css',
+    'https://ignaciosps.github.io/Twittor/img/favicon.ico',
+    'https://ignaciosps.github.io/Twittor/img/avatars/hulk.jpg',
+    'https://ignaciosps.github.io/Twittor/img/avatars/ironman.jpg',
+    'https://ignaciosps.github.io/Twittor/img/avatars/spiderman.jpg',
+    'https://ignaciosps.github.io/Twittor/img/avatars/thor.jpg',
+    'https://ignaciosps.github.io/Twittor/img/avatars/wolverine.jpg',
+    'https://ignaciosps.github.io/Twittor/js/app.js',
+    'https://ignaciosps.github.io/Twittor/js/sw-utils.js'
 ];
 
 const APP_SHELL_INMUTABLE = [
