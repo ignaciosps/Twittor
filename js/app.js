@@ -200,7 +200,7 @@ function getMensajes() {
 getMensajes();
 
 
-
+/*
 // Detectar cambios de conexión
 function isOnline() {
 
@@ -224,12 +224,12 @@ function isOnline() {
     }
 
 }
-
 window.addEventListener('online', isOnline );
 window.addEventListener('offline', isOnline );
 
 isOnline();
 
+*/
 
 // Notificaciones
 function verificaSuscripcion( activadas ) {
